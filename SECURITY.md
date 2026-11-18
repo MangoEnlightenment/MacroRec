@@ -11,7 +11,7 @@ Only the latest release of MacroRec receives security fixes. Please update befor
 Report it privately in one of these ways:
 
 1. Use GitHub's **"Report a vulnerability"** button on the repository's **Security** tab (private vulnerability reporting).
-2. Or email **[your contact email]**.
+2. Or email **roundfinal26@gmail.com**.
 
 Please include:
 
