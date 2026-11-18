@@ -19,7 +19,7 @@ A simple, good-looking macro recorder for Windows. Record your keyboard, mouse c
 
 ## Download
 
-Get `MacroRec.exe` from the [Releases](../../releases) page (Windows 64-bit). No installer: unzip and double-click.
+Download [`macrorec-windows.zip`](https://github.com/MangoEnlightenment/MacroRec/raw/main/macrorec-windows.zip) (Windows 64-bit), unzip it and double-click `MacroRec.exe`. No installer.
 
 The exe is unsigned, so Windows SmartScreen may warn about an unknown publisher. You can check the source and build it yourself (below).
 
