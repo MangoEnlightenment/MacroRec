@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	gdiplus = syscall.NewLazyDLL("gdiplus.dll")
+	gdiplus = sysDLL("gdiplus.dll")
 
 	pGdiplusStartup               = gdiplus.NewProc("GdiplusStartup")
 	pGdipCreateFromHDC            = gdiplus.NewProc("GdipCreateFromHDC")

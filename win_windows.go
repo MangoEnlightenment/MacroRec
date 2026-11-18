@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	user32   = syscall.NewLazyDLL("user32.dll")
+	user32   = sysDLL("user32.dll")
 	kernel32 = syscall.NewLazyDLL("kernel32.dll")
-	gdi32    = syscall.NewLazyDLL("gdi32.dll")
-	winmm    = syscall.NewLazyDLL("winmm.dll")
-	dwmapi   = syscall.NewLazyDLL("dwmapi.dll")
-	comdlg32 = syscall.NewLazyDLL("comdlg32.dll")
+	gdi32    = sysDLL("gdi32.dll")
+	winmm    = sysDLL("winmm.dll")
+	dwmapi   = sysDLL("dwmapi.dll")
+	comdlg32 = sysDLL("comdlg32.dll")
 
 	pRegisterClassEx         = user32.NewProc("RegisterClassExW")
 	pCreateWindowEx          = user32.NewProc("CreateWindowExW")
@@ -173,4 +173,40 @@ func dpiScale() float64 {
 		return 1
 	}
 	return float64(dpi) / 96
+}
+
+// ---- DLL loading hardening ----
+//
+// Windows normally looks for a library by name in the app's own folder first,
+// so a harmful DLL dropped next to the exe (for example in Downloads) could be
+// loaded instead of the real one. To prevent that, every library is loaded by
+// its full path in the Windows system folder, and the process is told to
+// search only that folder for libraries. kernel32.dll is always already loaded
+// by Windows before the program starts, so it is safe to load by name.
+
+var pGetSystemDirectory = kernel32.NewProc("GetSystemDirectoryW")
+var pSetDefaultDllDirectories = kernel32.NewProc("SetDefaultDllDirectories")
+
+func systemDir() string {
+	buf := make([]uint16, 260)
+	n, _, _ := pGetSystemDirectory.Call(uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)))
+	if n == 0 || int(n) >= len(buf) {
+		return `C:\Windows\System32`
+	}
+	return syscall.UTF16ToString(buf[:n])
+}
+
+// sysDLL returns a library that is loaded from the Windows system folder only.
+func sysDLL(name string) *syscall.LazyDLL {
+	return syscall.NewLazyDLL(systemDir() + `\` + name)
+}
+
+// restrictDLLSearch limits where this process looks for libraries to the
+// system folder (LOAD_LIBRARY_SEARCH_SYSTEM32). It must run before the first
+// call into any library other than kernel32. Very old Windows versions do not
+// have this function; in that case the full-path loading above still applies.
+func restrictDLLSearch() {
+	if pSetDefaultDllDirectories.Find() == nil {
+		pSetDefaultDllDirectories.Call(0x00000800)
+	}
 }

@@ -43,6 +43,7 @@ func fail(msg string) {
 }
 
 func main() {
+	restrictDLLSearch()        // before any library is used
 	pSetProcessDPIAware.Call() // crisp on high-DPI screens
 	pTimeBeginPeriod.Call(1)   // accurate timing for playback
 	scale := dpiScale()
