@@ -94,4 +94,4 @@ Your last recording is saved to `%AppData%\MacroRec\last-macro.txt`. Nothing is 
 
 ## License
 
-Add a license of your choice (for example MIT) as a `LICENSE` file.
+MIT. See [LICENSE](LICENSE).
